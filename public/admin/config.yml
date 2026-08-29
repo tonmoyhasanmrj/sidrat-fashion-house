@@ -1,8 +1,8 @@
 backend:
   name: github
-  repo: tonmoyhasanmrj/sidrat-fashion-house   # আপনার GitHub ইউজারনেম/রিপোর নাম — ইতিমধ্যে ঠিক আছে
+  repo: tonmoyhasanmrj/sidrat-fashion-house
   branch: main
-   base_url: https://sidrat-fashion-house.tonmoyhasanmrj-987.workers.dev  # ⚠️ Cloudflare Pages থেকে পাওয়া আসল লিংক দিয়ে এটা বদলান
+  base_url: https://sidrat-fashion-house.tonmoyhasanmrj-987.workers.dev
   auth_endpoint: api/auth
 
 media_folder: "images/uploads"
