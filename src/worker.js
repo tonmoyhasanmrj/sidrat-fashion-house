@@ -10,15 +10,8 @@ export default {
       return handleCallback(request, env);
     }
 
-    // Cloudflare-এর অটোমেটিক ফোল্ডার-ইনডেক্স রিজলভার নির্ভরযোগ্যভাবে কাজ না করায়,
-    // /admin ও /admin/ পাথ দুটো নিজেরাই সরাসরি admin/index.html-এ পাঠিয়ে দিচ্ছি
-    if (url.pathname === "/admin" || url.pathname === "/admin/") {
-      const assetUrl = new URL(request.url);
-      assetUrl.pathname = "/admin/index.html";
-      return env.ASSETS.fetch(new Request(assetUrl, request));
-    }
-
-    // অন্য সব রিকোয়েস্ট (index.html, ছবি, config.yml ইত্যাদি) — স্ট্যাটিক ফাইল হিসেবে সরাসরি দেখাবে
+    // অন্য সব রিকোয়েস্ট (index.html, admin, ছবি, config.yml ইত্যাদি) —
+    // স্ট্যাটিক ফাইল হিসেবে সরাসরি দেখাবে (run_worker_first চালু থাকায় এই কোডটা সবসময় আগে চলে)
     return env.ASSETS.fetch(request);
   }
 };
