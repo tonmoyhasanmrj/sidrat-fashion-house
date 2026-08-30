@@ -927,16 +927,5 @@ function openInfoModal(key){
 loadProducts();
 renderCartCount();
 </script>
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>
-// এটা শুধু Admin প্যানেলের ইনভাইট-ইমেইল লিংক ঠিকমতো কাজ করার জন্য — সাইটের সাধারণ ব্যবহারে এর কোনো প্রভাব নেই
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on('init', user => {
-    if (!user) {
-      window.netlifyIdentity.on('login', () => { document.location.href = '/admin/'; });
-    }
-  });
-}
-</script>
 </body>
 </html>
