@@ -10,7 +10,14 @@ export default {
       return handleCallback(request, env);
     }
 
-    // অন্য সব রিকোয়েস্ট (index.html, admin, ছবি, config.yml ইত্যাদি) —
+    // অ্যাডমিন প্যানেল — সরাসরি নির্দিষ্ট ফাইলে পাঠানো হচ্ছে (index.html নাম-সংঘর্ষ এড়াতে)
+    if (url.pathname === "/admin" || url.pathname === "/admin/") {
+      const panelUrl = new URL(request.url);
+      panelUrl.pathname = "/admin/panel.html";
+      return env.ASSETS.fetch(new Request(panelUrl, request));
+    }
+
+    // অন্য সব রিকোয়েস্ট (index.html, ছবি, config.yml ইত্যাদি) —
     // স্ট্যাটিক ফাইল হিসেবে সরাসরি দেখাবে (run_worker_first চালু থাকায় এই কোডটা সবসময় আগে চলে)
     return env.ASSETS.fetch(request);
   }
