@@ -40,3 +40,20 @@ collections:
               - {label: "ছবি", name: "img", widget: "image", required: false, hint: "ছবি না দিলে সুন্দর ডিজাইনার প্লেসহোল্ডার দেখাবে"}
               - {label: "বিবরণ", name: "desc", widget: "text"}
               - {label: "\"নতুন\" ব্যাজ দেখাবে?", name: "isNew", widget: "boolean", default: false}
+
+  - name: "settings"
+    label: "সেটিংস"
+    files:
+      - file: "content/settings.json"
+        label: "যোগাযোগ ও পেমেন্ট সেটিংস"
+        name: "settings"
+        fields:
+          - {label: "হোমপেজের হিরো ছবি", name: "heroImage", widget: "image", required: false, hint: "ছবি না দিলে ডিফল্ট ডিজাইন (খিলান-আকৃতির নকশা) দেখাবে"}
+          - {label: "WhatsApp নম্বর", name: "whatsappNumber", widget: "string", hint: "দেশের কোডসহ, + বা স্পেস ছাড়া — যেমন 8801XXXXXXXXX"}
+          - {label: "Telegram ইউজারনেম", name: "telegramUsername", widget: "string", hint: "@ চিহ্ন ছাড়া লিখুন"}
+          - {label: "Google Form লিংক", name: "googleFormUrl", widget: "string"}
+          - {label: "bKash নম্বর", name: "bkashNumber", widget: "string"}
+          - {label: "Nagad নম্বর", name: "nagadNumber", widget: "string"}
+          - {label: "যোগাযোগের ফোন নম্বর (ফুটারে দেখাবে)", name: "contactPhone", widget: "string"}
+          - {label: "ইমেইল ঠিকানা", name: "contactEmail", widget: "string"}
+          - {label: "ঠিকানা", name: "contactAddress", widget: "string"}
