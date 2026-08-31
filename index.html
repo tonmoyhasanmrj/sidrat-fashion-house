@@ -145,6 +145,11 @@ header{
   content:'সি'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   font-family:'Tiro Bangla'; font-size:4rem; color:var(--maroon-dark); opacity:0.85;
 }
+.hero-arch-photo{
+  position:absolute; left:20px; top:10px; width:220px; height:300px;
+  border-radius:var(--radius-arch); overflow:hidden; box-shadow:var(--shadow);
+}
+.hero-arch-photo img{width:100%; height:100%; object-fit:cover; display:block;}
 
 /* ---------- Category nav ---------- */
 .cat-nav{
@@ -412,7 +417,7 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
       <p>হাতে বাছাই করা শাড়ি, থ্রি-পিস, কুর্তি ও ওড়না — প্রতিটি পোশাকে বাংলার নকশা আর মার্জিত রুচির ছোঁয়া।</p>
       <a href="#shop" class="hero-cta">কালেকশন দেখুন</a>
     </div>
-    <div class="hero-visual">
+    <div class="hero-visual" id="heroVisual">
       <div class="hero-arch"></div>
       <div class="hero-arch"></div>
     </div>
@@ -446,9 +451,9 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
     </div>
     <div class="footer-col">
       <h3>যোগাযোগ</h3>
-      <p>📍 নারায়ণগঞ্জ, ঢাকা বিভাগ</p>
-      <p>📞 +৮৮০ ১৭৭১-৭৮৩৪০৮</p>
-      <p>✉️ masudurrahman875@gmail.com</p>
+      <p id="footerAddress">📍 নারায়ণগঞ্জ, ঢাকা বিভাগ</p>
+      <p id="footerPhone">📞 +৮৮০ ১৭৭১-৭৮৩৪০৮</p>
+      <p id="footerEmail">✉️ masudurrahman875@gmail.com</p>
     </div>
     <div class="footer-col">
       <h3>দ্রুত লিংক</h3>
@@ -540,15 +545,49 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
 
 <script>
 /* ============================================================
-   ⚙️ কনফিগারেশন — এখানে নিজের তথ্য বসান
+   ⚙️ কনফিগারেশন — এখন Netlify/Cloudflare CMS-এর "সেটিংস" থেকে লোড হয়
+   নিচের মানগুলো শুধু ডিফল্ট/ফলব্যাক — সেটিংস লোড না হলে এগুলো ব্যবহার হবে
    ============================================================ */
 const CONFIG = {
-  whatsappNumber: '8801771783408',      // WhatsApp নম্বর, কান্ট্রি কোডসহ, + বা স্পেস ছাড়া
-  telegramUsername: 'jabedhossainmrj', // আপনার ব্যক্তিগত/বিজনেস Telegram ইউজারনেম (@ ছাড়া) — কাস্টমারের মেসেজ সরাসরি আপনার ইনবক্সে আসবে
-  googleFormUrl: 'https://forms.gle/YcJytc2r4r7aErHu9', // আপনার Google Form-এর লিংক
-  bkashNumber: '01771783408',   // bKash Personal/Merchant নম্বর (Send Money-এর জন্য)
-  nagadNumber: '01771783408'    // Nagad Personal/Merchant নম্বর (Send Money-এর জন্য)
+  whatsappNumber: '8801771783408',
+  telegramUsername: 'jabedhossainmrj',
+  googleFormUrl: 'https://forms.gle/YcJytc2r4r7aErHu9',
+  bkashNumber: '01771783408',
+  nagadNumber: '01771783408'
 };
+
+async function loadSettings(){
+  try{
+    const res = await fetch('/content/settings.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch failed');
+    const s = await res.json();
+
+    if(s.whatsappNumber) CONFIG.whatsappNumber = s.whatsappNumber;
+    if(s.telegramUsername) CONFIG.telegramUsername = s.telegramUsername;
+    if(s.googleFormUrl) CONFIG.googleFormUrl = s.googleFormUrl;
+    if(s.bkashNumber) CONFIG.bkashNumber = s.bkashNumber;
+    if(s.nagadNumber) CONFIG.nagadNumber = s.nagadNumber;
+
+    if(s.contactAddress) $('#footerAddress').textContent = `📍 ${s.contactAddress}`;
+    if(s.contactPhone) $('#footerPhone').textContent = `📞 ${s.contactPhone}`;
+    if(s.contactEmail) $('#footerEmail').textContent = `✉️ ${s.contactEmail}`;
+
+    renderHeroVisual(s.heroImage);
+  }catch(e){
+    console.error('সেটিংস লোড করতে সমস্যা হয়েছে:', e);
+    renderHeroVisual('');
+  }
+  $('#footerWhatsapp').href = `https://wa.me/${CONFIG.whatsappNumber}`;
+}
+
+function renderHeroVisual(heroImage){
+  const container = $('#heroVisual');
+  if(heroImage){
+    container.innerHTML = `<div class="hero-arch-photo"><img src="${heroImage}" alt="সিদরাত ফ্যাশন হাউস" loading="lazy" onerror="renderHeroVisual('')"></div>`;
+  } else {
+    container.innerHTML = `<div class="hero-arch"></div><div class="hero-arch"></div>`;
+  }
+}
 
 /* ============================================================
    🛍️ প্রোডাক্ট ডেটা
@@ -911,9 +950,6 @@ $('#searchInput').addEventListener('input', (e)=>{
 document.addEventListener('keydown', (e)=>{
   if(e.key==='Escape'){ closeDrawer(); closeAllModals(); }
 });
-window.addEventListener('DOMContentLoaded', ()=>{
-  $('#footerWhatsapp').href = `https://wa.me/${CONFIG.whatsappNumber}`;
-});
 
 $('#deliveryLink').addEventListener('click', (e)=>{ e.preventDefault(); openInfoModal('delivery'); });
 $('#returnLink').addEventListener('click', (e)=>{ e.preventDefault(); openInfoModal('returns'); });
@@ -925,6 +961,7 @@ function openInfoModal(key){
 
 /* ---------- Init ---------- */
 loadProducts();
+loadSettings();
 renderCartCount();
 </script>
 </body>
