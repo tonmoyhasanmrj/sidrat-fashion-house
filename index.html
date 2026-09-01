@@ -86,7 +86,9 @@ header{
 .search-wrap input::placeholder{color:var(--blush); opacity:0.7;}
 .search-wrap input:focus{outline:2px solid var(--gold-light); background:rgba(255,255,255,0.15);}
 .search-wrap .icon{position:absolute; right:14px; top:50%; transform:translateY(-50%); opacity:0.8;}
-.header-actions{display:flex; align-items:center; gap:14px;}
+.header-actions{display:flex; align-items:center; gap:10px;}
+.icon-group{display:flex; flex-direction:column; align-items:center; gap:1px; text-decoration:none;}
+.icon-label{font-size:0.62rem; color:var(--blush); font-weight:600; letter-spacing:0.2px; opacity:0.9;}
 .icon-btn{
   position:relative; background:none; color:var(--cream); font-size:1.4rem;
   padding:6px; border-radius:50%; transition:background 0.2s;
@@ -344,6 +346,21 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
 .co-btn.telegram{background:#229ED9; color:#fff;}
 .co-btn.form{background:var(--gold); color:var(--maroon-dark);}
 .co-note{font-size:0.78rem; color:var(--rose); margin-top:16px; text-align:center;}
+.co-note a{color:var(--maroon); font-weight:600;}
+.submit-order-btn{
+  width:100%; background:var(--maroon); color:var(--gold-light); border:none; padding:14px;
+  border-radius:28px; font-weight:700; font-size:1rem; cursor:pointer; margin-top:10px;
+}
+.submit-order-btn:hover{background:var(--maroon-dark);}
+.submit-order-btn:disabled{opacity:0.6; cursor:default;}
+.form-error{color:#c0392b; text-align:center; margin-top:10px; font-size:0.88rem; min-height:1em;}
+.co-success{padding:44px 26px; text-align:center;}
+.co-success h2{font-family:'Tiro Bangla'; color:var(--maroon); font-size:1.5rem; font-weight:400; margin-bottom:6px;}
+.success-icon{font-size:3rem; margin-bottom:6px;}
+.order-id-display{
+  font-family:'Tiro Bangla'; font-size:1.8rem; font-weight:700; color:var(--maroon);
+  background:var(--blush); border-radius:12px; padding:14px; margin:14px 0; letter-spacing:1px;
+}
 
 /* Customer info form */
 .co-form{margin-bottom:20px;}
@@ -414,9 +431,15 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
       <span class="icon">🔍</span>
     </div>
     <div class="header-actions">
-      <a class="icon-btn" href="/track/" aria-label="অর্ডার ট্র্যাক করুন" title="অর্ডার ট্র্যাক করুন" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">📦</a>
-      <a class="icon-btn" href="/account/" aria-label="আমার একাউন্ট" title="আমার একাউন্ট / লগইন" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">👤</a>
-      <button class="icon-btn" id="cartBtn" aria-label="কার্ট দেখুন">🛍️<span class="cart-count" id="cartCount">0</span></button>
+      <a class="icon-group" href="/track/" aria-label="অর্ডার ট্র্যাক করুন" title="অর্ডার ট্র্যাক করুন">
+        <span class="icon-btn">📦</span><span class="icon-label">ট্র্যাকিং</span>
+      </a>
+      <a class="icon-group" href="/account/" aria-label="আমার একাউন্ট" title="আমার একাউন্ট / লগইন">
+        <span class="icon-btn">👤</span><span class="icon-label">একাউন্ট</span>
+      </a>
+      <button class="icon-group" id="cartBtn" aria-label="কার্ট দেখুন" style="background:none; border:none; cursor:pointer;">
+        <span class="icon-btn">🛍️<span class="cart-count" id="cartCount">0</span></span><span class="icon-label">কার্ট</span>
+      </button>
     </div>
   </div>
 </header>
@@ -457,9 +480,8 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
       <h3>সিদরাত ফ্যাশন হাউস</h3>
       <p>নারায়ণগঞ্জ, বাংলাদেশ থেকে পরিচালিত একটি নারী পোশাকের অনলাইন বুটিক।</p>
       <div class="social-row">
-        <a href="#" aria-label="Facebook">📘</a>
-        <a href="#" aria-label="Instagram">📷</a>
-        <a href="#" id="footerWhatsapp" aria-label="WhatsApp">💬</a>
+        <a href="#" id="footerWhatsapp" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+        <a href="#" id="footerTelegram" target="_blank" rel="noopener" aria-label="Telegram">✈️</a>
       </div>
     </div>
     <div class="footer-col">
@@ -506,9 +528,11 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
   <div class="modal-backdrop" data-close></div>
   <div class="modal-box">
     <button class="modal-close" data-close>×</button>
-    <div class="co-body">
+
+    <!-- ===== অর্ডার ফর্ম ===== -->
+    <div class="co-body" id="coFormView">
       <h2>অর্ডার সম্পন্ন করুন</h2>
-      <p class="co-sub">নিচের যেকোনো একটি মাধ্যমে অর্ডারটি পাঠিয়ে দিন — আমরা দ্রুত যোগাযোগ করবো।</p>
+      <p class="co-sub">নিচের তথ্য দিয়ে অর্ডারটি সাবমিট করুন — একটা অর্ডার আইডি তৈরি হবে যেটা দিয়ে পরে যেকোনো সময় স্ট্যাটাস দেখতে পারবেন।</p>
 
       <div class="co-form">
         <label class="co-label">নাম <span class="req">*</span></label>
@@ -517,21 +541,24 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
         <input type="tel" id="custPhone" class="co-input" placeholder="যেমন: 017XXXXXXXX">
         <label class="co-label">ঠিকানা <span class="req">*</span></label>
         <textarea id="custAddress" class="co-input" rows="2" placeholder="বাসা/রোড/এলাকা, থানা, জেলা"></textarea>
+
         <label class="co-label">পেমেন্ট মাধ্যম</label>
         <select id="custPayment" class="co-input">
           <option value="ক্যাশ অন ডেলিভারি">ক্যাশ অন ডেলিভারি</option>
           <option value="bKash">bKash</option>
           <option value="Nagad">Nagad</option>
         </select>
-        <label class="co-label">ট্রানজেকশন আইডি (bKash/Nagad হলে)</label>
-        <input type="text" id="custTrxId" class="co-input" placeholder="যেমন: 8N7A5X2K1P">
+
+        <div id="trxIdGroup" style="display:none;">
+          <label class="co-label">ট্রানজেকশন আইডি <span class="req">*</span></label>
+          <input type="text" id="custTrxId" class="co-input" placeholder="যেমন: 8N7A5X2K1P">
+        </div>
       </div>
 
       <div class="co-summary" id="coSummary"></div>
-      <div class="co-copy" id="coCopy"><span>অর্ডার সারাংশ কপি করুন</span><span class="copy-icon">📋</span></div>
 
-      <div class="pay-block">
-        <div class="pay-title">💳 পেমেন্ট করুন (Send Money)</div>
+      <div class="pay-block" id="bkashPayRow" style="display:none;">
+        <div class="pay-title">💳 bKash-এ Send Money করুন</div>
         <div class="pay-row bkash">
           <div class="pay-logo bkash">bKash</div>
           <div class="pay-info">
@@ -541,6 +568,11 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
           </div>
           <button class="pay-copy-btn" data-copynum="bkash">কপি</button>
         </div>
+        <p class="pay-note">Send Money করার পর যে ট্রানজেকশন আইডিটা পাবেন সেটা উপরের ঘরে বসিয়ে দিন।</p>
+      </div>
+
+      <div class="pay-block" id="nagadPayRow" style="display:none;">
+        <div class="pay-title">💳 Nagad-এ Send Money করুন</div>
         <div class="pay-row nagad">
           <div class="pay-logo nagad">Nagad</div>
           <div class="pay-info">
@@ -550,14 +582,21 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
           </div>
           <button class="pay-copy-btn" data-copynum="nagad">কপি</button>
         </div>
-        <p class="pay-note">উপরের নম্বরে <strong>Send Money</strong> করে ট্রানজেকশন আইডি (TrxID)-সহ অর্ডার মেসেজটি WhatsApp/Telegram-এ পাঠান — এতে অর্ডার দ্রুত কনফার্ম হবে। চাইলে ক্যাশ অন ডেলিভারিও করতে পারেন।</p>
+        <p class="pay-note">Send Money করার পর যে ট্রানজেকশন আইডিটা পাবেন সেটা উপরের ঘরে বসিয়ে দিন।</p>
       </div>
 
-      <div class="co-options">
-        <a class="co-btn whatsapp" id="waBtn" target="_blank" rel="noopener"><span class="emoji">💬</span> WhatsApp-এ অর্ডার পাঠান</a>
-        <a class="co-btn telegram" id="tgBtn" target="_blank" rel="noopener"><span class="emoji">✈️</span> Telegram-এ অর্ডার পাঠান</a>
-      </div>
-      <p class="co-note">Telegram-এর ক্ষেত্রে অনুগ্রহ করে কপি করা সারাংশটি চ্যাটে পেস্ট করে দিন।</p>
+      <button class="submit-order-btn" id="submitOrderBtn">অর্ডার সাবমিট করুন</button>
+      <p class="form-error" id="checkoutError"></p>
+    </div>
+
+    <!-- ===== অর্ডার সফল হওয়ার পর দেখানো হয় ===== -->
+    <div class="co-success" id="coSuccessView" style="display:none;">
+      <div class="success-icon">✅</div>
+      <h2>অর্ডার সম্পন্ন হয়েছে!</h2>
+      <p class="co-sub">আপনার অর্ডার আইডি</p>
+      <div class="order-id-display" id="successOrderId"></div>
+      <p class="co-note">এই আইডি ও আপনার ফোন নম্বর দিয়ে <a href="/track/">অর্ডার ট্র্যাক করুন</a> পেজ থেকে যেকোনো সময় স্ট্যাটাস দেখতে পারবেন। লগইন করা থাকলে <a href="/account/">আমার একাউন্ট</a>-এও অর্ডারটি দেখা যাবে।</p>
+      <button class="submit-order-btn" id="closeSuccessBtn">ঠিক আছে</button>
     </div>
   </div>
 </div>
@@ -606,6 +645,7 @@ async function loadSettings(){
     renderHeroVisual('');
   }
   $('#footerWhatsapp').href = `https://wa.me/${CONFIG.whatsappNumber}`;
+  $('#footerTelegram').href = `https://t.me/${CONFIG.telegramUsername}`;
 }
 
 function renderHeroVisual(heroImage){
@@ -674,7 +714,7 @@ const POLICIES = {
       <p style="margin-bottom:8px;">🏠 <strong>নারায়ণগঞ্জ ও ঢাকার ভেতরে:</strong> ১–২ কার্যদিবস</p>
       <p style="margin-bottom:8px;">🚚 <strong>ঢাকার বাইরে (সারা বাংলাদেশ):</strong> ৩–৫ কার্যদিবস</p>
       <p style="margin-bottom:16px;">💵 <strong>ডেলিভারি চার্জ:</strong> ঢাকার ভেতরে ৳৭০, ঢাকার বাইরে ৳১২০ (কুরিয়ার ভেদে সামান্য হেরফের হতে পারে)</p>
-      <p style="margin-bottom:8px;">পণ্য হাতে পেয়ে চেক করে তারপর টাকা পরিশোধ করবেন (ক্যাশ অন ডেলিভারি)। অর্ডার করার পর WhatsApp/Telegram-এ আমরা কনফার্মেশন মেসেজ পাঠাবো।</p>
+      <p style="margin-bottom:8px;">পণ্য হাতে পেয়ে চেক করে তারপর টাকা পরিশোধ করবেন (ক্যাশ অন ডেলিভারি)। অর্ডার সাবমিট করার পর একটা অর্ডার আইডি পাবেন, যেটা দিয়ে যেকোনো সময় "অর্ডার ট্র্যাক করুন" পেজ থেকে স্ট্যাটাস দেখতে পারবেন।</p>
     `
   },
   returns: {
@@ -928,22 +968,6 @@ function fallbackCopy(text, label){
 }
 
 /* ---------- Checkout ---------- */
-function buildOrderSummary(orderId){
-  const name = $('#custName').value.trim();
-  const phone = $('#custPhone').value.trim();
-  const address = $('#custAddress').value.trim();
-  const paymentMethod = $('#custPayment').value;
-  const trxId = $('#custTrxId').value.trim();
-
-  const lines = cart.map(i => `• ${i.name} (সাইজ: ${i.size}) × ${i.qty} = ${fmt(i.price*i.qty)}`);
-  const total = `সর্বমোট: ${fmt(cartTotal())}`;
-
-  let text = (orderId ? `অর্ডার নম্বর: ${orderId}\n\n` : '') + lines.join('\n') + '\n' + total;
-  text += `\n\nনাম: ${name}\nঠিকানা: ${address}\nফোন নম্বর: ${phone}\nপেমেন্ট মাধ্যম: ${paymentMethod}`;
-  if(trxId) text += `\nট্রানজেকশন আইডি: ${trxId}`;
-  return text;
-}
-
 async function saveOrder(via){
   const name = $('#custName').value.trim();
   const phone = $('#custPhone').value.trim();
@@ -992,6 +1016,15 @@ async function prefillFromAccount(){
   }catch(e){ /* লগইন করা না থাকলে চুপচাপ এগিয়ে যাও */ }
 }
 
+/* ---------- পেমেন্ট মাধ্যম অনুযায়ী bKash/Nagad নম্বর ও ট্রানজেকশন আইডি ফিল্ড দেখানো/লুকানো ---------- */
+function updatePaymentVisibility(){
+  const method = $('#custPayment').value;
+  $('#bkashPayRow').style.display = method === 'bKash' ? 'block' : 'none';
+  $('#nagadPayRow').style.display = method === 'Nagad' ? 'block' : 'none';
+  $('#trxIdGroup').style.display = (method === 'bKash' || method === 'Nagad') ? 'block' : 'none';
+}
+$('#custPayment').addEventListener('change', updatePaymentVisibility);
+
 function openCheckout(){
   if(cart.length===0){
     showToast('আপনার কার্ট খালি, আগে পণ্য যোগ করুন।');
@@ -1001,8 +1034,6 @@ function openCheckout(){
   $('#coSummary').innerHTML = cart.map(i =>
     `<div class="line"><span>${i.name} (${i.size}) ×${i.qty}</span><span>${fmt(i.price*i.qty)}</span></div>`
   ).join('') + `<div class="line total"><span>সর্বমোট</span><span>${fmt(cartTotal())}</span></div>`;
-
-  $('#coCopy').onclick = () => copyOrderSummary(buildOrderSummary(), 'অর্ডার সারাংশ');
 
   $('#bkashNum').textContent = CONFIG.bkashNumber;
   $('#nagadNum').textContent = CONFIG.nagadNumber;
@@ -1014,30 +1045,66 @@ function openCheckout(){
     };
   });
 
+  // ফর্ম রিসেট করে প্রথম অবস্থায় ফিরিয়ে আনা
+  $('#custPayment').value = 'ক্যাশ অন ডেলিভারি';
+  $('#custTrxId').value = '';
+  $('#checkoutError').textContent = '';
+  updatePaymentVisibility();
+  $('#coFormView').style.display = 'block';
+  $('#coSuccessView').style.display = 'none';
+  $('#submitOrderBtn').disabled = false;
+  $('#submitOrderBtn').textContent = 'অর্ডার সাবমিট করুন';
+
   closeDrawer();
   $('#checkoutModal').classList.add('open');
 }
+
+/* ---------- অর্ডার সাবমিট ---------- */
+$('#submitOrderBtn').addEventListener('click', async () => {
+  $('#checkoutError').textContent = '';
+  const name = $('#custName').value.trim();
+  const phone = $('#custPhone').value.trim();
+  const address = $('#custAddress').value.trim();
+  const method = $('#custPayment').value;
+  const trxId = $('#custTrxId').value.trim();
+
+  if(!name || !phone || !address){
+    $('#checkoutError').textContent = 'নাম, ফোন নম্বর ও ঠিকানা লিখুন';
+    return;
+  }
+  if((method === 'bKash' || method === 'Nagad') && !trxId){
+    $('#checkoutError').textContent = 'ট্রানজেকশন আইডি লিখুন';
+    return;
+  }
+
+  $('#submitOrderBtn').disabled = true;
+  $('#submitOrderBtn').textContent = 'সাবমিট হচ্ছে...';
+
+  const orderId = await saveOrder('website');
+
+  $('#submitOrderBtn').disabled = false;
+  $('#submitOrderBtn').textContent = 'অর্ডার সাবমিট করুন';
+
+  if(!orderId){
+    $('#checkoutError').textContent = 'অর্ডার সাবমিট করা যায়নি, একটু পর আবার চেষ্টা করুন';
+    return;
+  }
+
+  $('#successOrderId').textContent = '#' + orderId;
+  $('#coFormView').style.display = 'none';
+  $('#coSuccessView').style.display = 'block';
+
+  cart = [];
+  saveCart();
+  renderCartCount();
+});
+$('#closeSuccessBtn').addEventListener('click', closeAllModals);
 
 /* ---------- Event bindings ---------- */
 $('#cartBtn').addEventListener('click', openDrawer);
 $('#closeCart').addEventListener('click', closeDrawer);
 $('#overlay').addEventListener('click', closeDrawer);
 $('#checkoutBtn').addEventListener('click', openCheckout);
-$('#waBtn').addEventListener('click', async (e)=>{
-  e.preventDefault();
-  const orderId = await saveOrder('whatsapp');
-  if(orderId === null && (!$('#custName').value.trim() || !$('#custPhone').value.trim() || !$('#custAddress').value.trim())) return;
-  const summaryText = buildOrderSummary(orderId);
-  const waText = encodeURIComponent(`নমস্কার সিদরাত ফ্যাশন হাউস, আমি নিচের পণ্যগুলো অর্ডার করতে চাই:\n\n${summaryText}`);
-  window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${waText}`, '_blank');
-});
-$('#tgBtn').addEventListener('click', async (e)=>{
-  e.preventDefault();
-  const orderId = await saveOrder('telegram');
-  if(orderId === null && (!$('#custName').value.trim() || !$('#custPhone').value.trim() || !$('#custAddress').value.trim())) return;
-  copyOrderSummary(buildOrderSummary(orderId), 'অর্ডার সারাংশ');
-  window.open(`https://t.me/${CONFIG.telegramUsername}`, '_blank');
-});
 $$('[data-close]').forEach(el => el.addEventListener('click', closeAllModals));
 $('#searchInput').addEventListener('input', (e)=>{
   searchTerm = e.target.value;
