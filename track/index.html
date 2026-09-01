@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>অর্ডার ট্র্যাক করুন | সিদরাত ফ্যাশন হাউস</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --maroon:#6B1E3C; --maroon-dark:#3E0F22; --gold:#C9974D; --gold-light:#E8CFA0;
+  --cream:#FBF6F0; --blush:#F3E1DD; --charcoal:#2B2320; --rose:#A85C6B; --white:#fff;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Hind Siliguri',sans-serif; background:var(--cream); color:var(--charcoal); padding:20px;}
+a{color:var(--maroon);}
+h1{font-family:'Tiro Bangla',serif; color:var(--maroon); font-weight:400; margin-bottom:6px;}
+.sub{color:var(--rose); font-size:0.9rem; margin-bottom:24px;}
+.top-link{display:block; max-width:420px; margin:0 auto 14px; text-align:center; font-size:0.9rem;}
+
+.track-box{
+  max-width:420px; margin:20px auto; background:var(--white); padding:28px;
+  border-radius:14px; box-shadow:0 8px 24px rgba(59,15,30,0.1); text-align:center;
+}
+.field{margin-bottom:14px; text-align:left;}
+.field label{display:block; font-size:0.85rem; font-weight:600; color:var(--charcoal); margin-bottom:6px;}
+.field input{
+  width:100%; padding:11px 14px; border:1.5px solid var(--blush); border-radius:10px;
+  font-size:0.95rem; font-family:inherit;
+}
+.field input:focus{outline:none; border-color:var(--gold);}
+.submit-btn{
+  width:100%; background:var(--maroon); color:var(--gold-light); border:none; padding:12px 24px;
+  border-radius:24px; font-weight:700; font-size:0.95rem; cursor:pointer; margin-top:6px;
+}
+.submit-btn:hover{background:var(--maroon-dark);}
+.submit-btn:disabled{opacity:0.6; cursor:default;}
+.form-error{color:#c0392b; text-align:center; margin-top:12px; font-size:0.88rem; min-height:1em;}
+
+.result-card{
+  max-width:420px; margin:20px auto; background:var(--white); border-radius:14px; padding:20px 22px;
+  box-shadow:0 3px 12px rgba(59,15,30,0.07); border-left:4px solid var(--gold); display:none;
+}
+.order-head{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+.order-id{font-weight:700; color:var(--maroon); font-size:1.1rem;}
+.order-date{color:var(--rose); font-size:0.8rem;}
+.order-grid{font-size:0.9rem; margin-bottom:10px;}
+.order-grid div{padding:2px 0;}
+.order-grid b{color:var(--charcoal);}
+.items-list{font-size:0.88rem; background:var(--cream); border-radius:8px; padding:10px 14px; margin-bottom:10px;}
+.items-list div{padding:2px 0;}
+.order-total{font-weight:700; color:var(--maroon); font-size:1rem; margin-bottom:12px;}
+.status-badge{
+  display:inline-block; padding:8px 20px; border-radius:18px; font-size:0.95rem;
+  font-weight:700; background:var(--blush); color:var(--maroon);
+}
+</style>
+</head>
+<body>
+
+<a class="top-link" href="/">← দোকানে ফিরে যান</a>
+
+<div class="track-box">
+  <h1>📦 অর্ডার ট্র্যাক করুন</h1>
+  <p class="sub">একাউন্ট ছাড়াই — শুধু অর্ডার আইডি ও ফোন নম্বর দিয়ে</p>
+  <form id="trackForm">
+    <div class="field">
+      <label>অর্ডার আইডি</label>
+      <input type="text" id="orderIdInput" placeholder="যেমন: A1B2C3D4" required>
+    </div>
+    <div class="field">
+      <label>ফোন নম্বর</label>
+      <input type="tel" id="phoneInput" placeholder="01xxxxxxxxx" required>
+    </div>
+    <button type="submit" class="submit-btn" id="trackSubmit">ট্র্যাক করুন</button>
+    <p class="form-error" id="trackError"></p>
+  </form>
+</div>
+
+<div class="result-card" id="resultCard"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+function fmt(n){ return '৳' + Number(n).toLocaleString('en-US'); }
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str ?? '';
+  return d.innerHTML;
+}
+
+$('#trackForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('#trackError').textContent = '';
+  $('#resultCard').style.display = 'none';
+  $('#trackSubmit').disabled = true;
+
+  const orderId = $('#orderIdInput').value.trim();
+  const phone = $('#phoneInput').value.trim();
+
+  try{
+    const url = `/api/track?orderId=${encodeURIComponent(orderId)}&phone=${encodeURIComponent(phone)}`;
+    const res = await fetch(url, {cache:'no-store'});
+    const data = await res.json();
+
+    if(!res.ok || !data.order){
+      $('#trackError').textContent = data.error || 'অর্ডার পাওয়া যায়নি';
+      return;
+    }
+    renderOrder(data.order);
+  }catch(e){
+    $('#trackError').textContent = 'সমস্যা হয়েছে, আবার চেষ্টা করুন';
+  }finally{
+    $('#trackSubmit').disabled = false;
+  }
+});
+
+function renderOrder(o){
+  let items = [];
+  try{ items = JSON.parse(o.items); }catch(e){}
+  const itemsHtml = items.map(i => `<div>• ${escapeHtml(i.name)} (${escapeHtml(i.size)}) × ${i.qty} = ${fmt(i.price*i.qty)}</div>`).join('');
+  const date = new Date(o.created_at).toLocaleString('bn-BD', {dateStyle:'medium', timeStyle:'short'});
+
+  $('#resultCard').innerHTML = `
+    <div class="order-head">
+      <span class="order-id">#${escapeHtml(o.id)}</span>
+      <span class="order-date">${date}</span>
+    </div>
+    <div class="order-grid">
+      <div><b>নাম:</b> ${escapeHtml(o.name)}</div>
+      <div><b>ঠিকানা:</b> ${escapeHtml(o.address)}</div>
+    </div>
+    <div class="items-list">${itemsHtml}</div>
+    <div class="order-total">সর্বমোট: ${fmt(o.total)}</div>
+    <span class="status-badge">স্ট্যাটাস: ${escapeHtml(o.status)}</span>
+  `;
+  $('#resultCard').style.display = 'block';
+}
+</script>
+</body>
+</html>

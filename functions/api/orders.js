@@ -2,6 +2,11 @@
 // POST   /api/orders        -> নতুন অর্ডার সেভ করা (ওয়েবসাইট থেকে)
 // GET    /api/orders?key=.. -> সব অর্ডার দেখা (শুধু সঠিক key দিলে)
 // PATCH  /api/orders?key=.. -> কোনো অর্ডারের স্ট্যাটাস বদলানো
+//
+// কাস্টমার লগইন করা অবস্থায় অর্ডার করলে, সেশন কুকি দেখে সেই অর্ডারটা
+// স্বয়ংক্রিয়ভাবে তার একাউন্টের সাথে যুক্ত (user_id) করে দেওয়া হয়।
+
+import { verifySessionToken, getCookie } from "../_shared/auth-utils.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -14,12 +19,20 @@ export async function onRequestPost(context) {
       return json({ error: "নাম, ফোন, ঠিকানা ও প্রোডাক্ট তথ্য আবশ্যক" }, 400);
     }
 
+    // লগইন করা থাকলে সেশন থেকে user_id বের করা (না থাকলে null, গেস্ট চেকআউট)
+    let userId = null;
+    if (env.SESSION_SECRET) {
+      const token = getCookie(request, "sf_session");
+      const payload = token ? await verifySessionToken(token, env.SESSION_SECRET) : null;
+      if (payload && payload.uid) userId = payload.uid;
+    }
+
     const id = crypto.randomUUID().slice(0, 8).toUpperCase();
     const createdAt = new Date().toISOString();
 
     await env.DB.prepare(
-      `INSERT INTO orders (id, created_at, name, phone, address, items, total, via, payment_method, trx_id, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'নতুন')`
+      `INSERT INTO orders (id, created_at, name, phone, address, items, total, via, payment_method, trx_id, status, user_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'নতুন', ?)`
     )
       .bind(
         id,
@@ -31,7 +44,8 @@ export async function onRequestPost(context) {
         total || 0,
         via || "",
         paymentMethod || "",
-        trxId || ""
+        trxId || "",
+        userId
       )
       .run();
 

@@ -414,6 +414,8 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
       <span class="icon">🔍</span>
     </div>
     <div class="header-actions">
+      <a class="icon-btn" href="/track/" aria-label="অর্ডার ট্র্যাক করুন" title="অর্ডার ট্র্যাক করুন" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">📦</a>
+      <a class="icon-btn" href="/account/" aria-label="আমার একাউন্ট" title="আমার একাউন্ট / লগইন" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">👤</a>
       <button class="icon-btn" id="cartBtn" aria-label="কার্ট দেখুন">🛍️<span class="cart-count" id="cartCount">0</span></button>
     </div>
   </div>
@@ -979,11 +981,23 @@ async function saveOrder(via){
   }
 }
 
+async function prefillFromAccount(){
+  try{
+    const res = await fetch('/api/me', {cache:'no-store'});
+    const data = await res.json();
+    if(data.loggedIn && data.user){
+      if(!$('#custName').value.trim()) $('#custName').value = data.user.name || '';
+      if(!$('#custPhone').value.trim()) $('#custPhone').value = data.user.phone || '';
+    }
+  }catch(e){ /* লগইন করা না থাকলে চুপচাপ এগিয়ে যাও */ }
+}
+
 function openCheckout(){
   if(cart.length===0){
     showToast('আপনার কার্ট খালি, আগে পণ্য যোগ করুন।');
     return;
   }
+  prefillFromAccount();
   $('#coSummary').innerHTML = cart.map(i =>
     `<div class="line"><span>${i.name} (${i.size}) ×${i.qty}</span><span>${fmt(i.price*i.qty)}</span></div>`
   ).join('') + `<div class="line total"><span>সর্বমোট</span><span>${fmt(cartTotal())}</span></div>`;
