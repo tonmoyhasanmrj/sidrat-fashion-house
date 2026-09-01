@@ -133,23 +133,25 @@ header{
 }
 .hero-cta:hover{transform:translateY(-2px);}
 .hero-visual{
-  flex:0 0 260px; height:320px; position:relative;
+  flex:0 0 520px; max-width:44%; height:420px; position:relative;
 }
 .hero-arch{
-  position:absolute; width:220px; height:300px;
+  position:absolute; width:85%; height:88%;
   border-radius:var(--radius-arch);
   background:linear-gradient(150deg, var(--gold-light), var(--gold) 60%, var(--rose));
   box-shadow:var(--shadow);
 }
-.hero-arch:nth-child(1){left:0; top:20px; transform:rotate(-6deg); opacity:0.85;}
-.hero-arch:nth-child(2){left:50px; top:0; z-index:2;}
+.hero-arch:nth-child(1){left:0; top:6%; transform:rotate(-6deg); opacity:0.85;}
+.hero-arch:nth-child(2){left:12%; top:0; z-index:2;}
 .hero-arch:nth-child(2)::after{
   content:'সি'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   font-family:'Tiro Bangla'; font-size:4rem; color:var(--maroon-dark); opacity:0.85;
 }
 .hero-arch-photo{
-  position:absolute; left:20px; top:10px; width:220px; height:300px;
-  border-radius:var(--radius-arch); overflow:hidden; box-shadow:var(--shadow);
+  position:absolute; inset:0; width:100%; height:100%;
+  border-radius:var(--radius-arch); overflow:hidden;
+  border:4px solid var(--gold);
+  box-shadow:var(--shadow);
 }
 .hero-arch-photo img{width:100%; height:100%; object-fit:cover; display:block;}
 
@@ -408,6 +410,9 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
 }
 .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
+@media (max-width:900px){
+  .hero-visual{flex:0 0 380px; height:320px; max-width:46%;}
+}
 @media (max-width:640px){
   .header-inner{flex-wrap:wrap;}
   .search-wrap{order:3; max-width:100%; width:100%;}
@@ -450,7 +455,7 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
     <div class="hero-text">
       <span class="hero-eyebrow">নারায়ণগঞ্জ থেকে সারা বাংলাদেশে</span>
       <h1>ঐতিহ্য আর আভিজাত্যের<br>মেলবন্ধনে সিদরাত</h1>
-      <p>হাতে বাছাই করা প্রতিটি পোশাকে বাংলার নকশা আর মার্জিত রুচির ছোঁয়া।</p>
+      <p>হাতে বাছাই করা শাড়ি, থ্রি-পিস, কুর্তি ও ওড়না — প্রতিটি পোশাকে বাংলার নকশা আর মার্জিত রুচির ছোঁয়া।</p>
       <a href="#shop" class="hero-cta">কালেকশন দেখুন</a>
     </div>
     <div class="hero-visual" id="heroVisual">
@@ -478,7 +483,7 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
   <div class="footer-inner">
     <div class="footer-col">
       <h3>সিদরাত ফ্যাশন হাউস</h3>
-      <p>নারায়ণগঞ্জ, বাংলাদেশ থেকে পরিচালিত নারী পোশাকের একটি বিশ্বস্ত প্রতিষ্ঠান।</p>
+      <p>নারায়ণগঞ্জ, বাংলাদেশ থেকে পরিচালিত একটি নারী পোশাকের অনলাইন বুটিক।</p>
       <div class="social-row">
         <a href="#" id="footerWhatsapp" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
         <a href="#" id="footerTelegram" target="_blank" rel="noopener" aria-label="Telegram">✈️</a>
@@ -488,7 +493,7 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
       <h3>যোগাযোগ</h3>
       <p id="footerAddress">📍 নারায়ণগঞ্জ, ঢাকা বিভাগ</p>
       <p id="footerPhone">📞 +৮৮০ ১৭৭১-৭৮৩৪০৮</p>
-      <p id="footerEmail">✉️ sidratfashionhouse@gmail.com</p>
+      <p id="footerEmail">✉️ masudurrahman875@gmail.com</p>
     </div>
     <div class="footer-col">
       <h3>দ্রুত লিংক</h3>
