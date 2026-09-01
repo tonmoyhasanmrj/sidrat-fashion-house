@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>অর্ডার তালিকা | সিদরাত ফ্যাশন হাউস</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --maroon:#6B1E3C; --maroon-dark:#3E0F22; --gold:#C9974D; --gold-light:#E8CFA0;
+  --cream:#FBF6F0; --blush:#F3E1DD; --charcoal:#2B2320; --rose:#A85C6B; --white:#fff;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Hind Siliguri',sans-serif; background:var(--cream); color:var(--charcoal); padding:20px;}
+h1{font-family:'Tiro Bangla',serif; color:var(--maroon); font-weight:400; margin-bottom:6px;}
+.sub{color:var(--rose); font-size:0.9rem; margin-bottom:24px;}
+.lock-box{
+  max-width:380px; margin:60px auto; background:var(--white); padding:28px;
+  border-radius:14px; box-shadow:0 8px 24px rgba(59,15,30,0.1); text-align:center;
+}
+.lock-box input{
+  width:100%; padding:12px 14px; border:1.5px solid var(--blush); border-radius:10px;
+  font-size:1rem; margin:14px 0; text-align:center;
+}
+.lock-box button, .refresh-btn{
+  background:var(--maroon); color:var(--gold-light); border:none; padding:12px 24px;
+  border-radius:24px; font-weight:700; font-size:0.95rem; cursor:pointer; width:100%;
+}
+.lock-box button:hover, .refresh-btn:hover{background:var(--maroon-dark);}
+.top-bar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;}
+.refresh-btn{width:auto; padding:10px 20px;}
+.error{color:#c0392b; text-align:center; margin-top:10px; font-size:0.9rem;}
+#dashboard{display:none;}
+.order-card{
+  background:var(--white); border-radius:12px; padding:18px 20px; margin-bottom:14px;
+  box-shadow:0 3px 12px rgba(59,15,30,0.07); border-left:4px solid var(--gold);
+}
+.order-head{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+.order-id{font-weight:700; color:var(--maroon); font-size:1.05rem;}
+.order-date{color:var(--rose); font-size:0.8rem;}
+.order-grid{display:grid; grid-template-columns:1fr 1fr; gap:6px 20px; font-size:0.9rem; margin-bottom:10px;}
+@media(max-width:600px){.order-grid{grid-template-columns:1fr;}}
+.order-grid b{color:var(--charcoal);}
+.items-list{font-size:0.88rem; background:var(--cream); border-radius:8px; padding:10px 14px; margin-bottom:10px;}
+.items-list div{padding:2px 0;}
+.order-total{font-weight:700; color:var(--maroon); font-size:1rem;}
+.status-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.status-row select{
+  padding:7px 12px; border-radius:16px; border:1.5px solid var(--blush); font-size:0.85rem;
+  font-weight:600; background:var(--cream); color:var(--charcoal);
+}
+.status-saved{font-size:0.8rem; color:#2e7d32; opacity:0; transition:opacity 0.3s;}
+.status-saved.show{opacity:1;}
+.empty{text-align:center; padding:60px 20px; color:var(--rose);}
+</style>
+</head>
+<body>
+
+<div class="lock-box" id="lockBox">
+  <h1>🔒 অর্ডার তালিকা</h1>
+  <p class="sub">শুধু আপনার জন্য — অ্যাডমিন পাসওয়ার্ড দিন</p>
+  <input type="password" id="keyInput" placeholder="অ্যাডমিন কী" onkeydown="if(event.key==='Enter') loadOrders()">
+  <button onclick="loadOrders()">দেখুন</button>
+  <p class="error" id="lockError"></p>
+</div>
+
+<div id="dashboard">
+  <div class="top-bar">
+    <div>
+      <h1>অর্ডার তালিকা</h1>
+      <p class="sub" id="orderCount"></p>
+    </div>
+    <button class="refresh-btn" onclick="loadOrders()">🔄 রিফ্রেশ করুন</button>
+  </div>
+  <div id="ordersContainer"></div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+let ADMIN_KEY = '';
+
+function fmt(n){ return '৳' + Number(n).toLocaleString('en-US'); }
+
+async function loadOrders(){
+  const key = $('#keyInput').value.trim() || ADMIN_KEY;
+  if(!key){
+    $('#lockError').textContent = 'অ্যাডমিন কী লিখুন';
+    return;
+  }
+  ADMIN_KEY = key;
+
+  try{
+    const res = await fetch(`/api/orders?key=${encodeURIComponent(key)}`, {cache:'no-store'});
+    const data = await res.json();
+
+    if(!res.ok){
+      $('#lockError').textContent = data.error || 'ভুল কী, আবার চেষ্টা করুন';
+      $('#dashboard').style.display = 'none';
+      $('#lockBox').style.display = 'block';
+      return;
+    }
+
+    $('#lockBox').style.display = 'none';
+    $('#dashboard').style.display = 'block';
+    renderOrders(data.orders || []);
+  }catch(e){
+    $('#lockError').textContent = 'সমস্যা হয়েছে, আবার চেষ্টা করুন';
+  }
+}
+
+function renderOrders(orders){
+  $('#orderCount').textContent = `মোট ${orders.length}টা অর্ডার`;
+  const container = $('#ordersContainer');
+
+  if(orders.length === 0){
+    container.innerHTML = `<div class="empty">🛍️<br>এখনো কোনো অর্ডার আসেনি।</div>`;
+    return;
+  }
+
+  container.innerHTML = orders.map(o => {
+    let items = [];
+    try{ items = JSON.parse(o.items); }catch(e){}
+    const itemsHtml = items.map(i => `<div>• ${i.name} (${i.size}) × ${i.qty} = ${fmt(i.price*i.qty)}</div>`).join('');
+    const date = new Date(o.created_at).toLocaleString('bn-BD', {dateStyle:'medium', timeStyle:'short'});
+    const viaLabel = o.via === 'whatsapp' ? '💬 WhatsApp' : o.via === 'telegram' ? '✈️ Telegram' : (o.via || '—');
+
+    return `
+      <div class="order-card">
+        <div class="order-head">
+          <span class="order-id">#${o.id}</span>
+          <span class="order-date">${date}</span>
+        </div>
+        <div class="order-grid">
+          <div><b>নাম:</b> ${escapeHtml(o.name)}</div>
+          <div><b>ফোন:</b> ${escapeHtml(o.phone)}</div>
+          <div><b>ঠিকানা:</b> ${escapeHtml(o.address)}</div>
+          <div><b>মাধ্যম:</b> ${viaLabel}</div>
+          <div><b>পেমেন্ট:</b> ${escapeHtml(o.payment_method || '—')}</div>
+          <div><b>ট্রানজেকশন আইডি:</b> ${escapeHtml(o.trx_id || '—')}</div>
+        </div>
+        <div class="items-list">${itemsHtml}</div>
+        <div class="order-total">সর্বমোট: ${fmt(o.total)}</div>
+        <div class="status-row" style="margin-top:10px;">
+          <b>স্ট্যাটাস:</b>
+          <select onchange="updateStatus('${o.id}', this.value, this)">
+            ${['নতুন','কনফার্মড','ডেলিভারি হচ্ছে','সম্পন্ন','বাতিল'].map(s =>
+              `<option value="${s}" ${o.status===s ? 'selected':''}>${s}</option>`
+            ).join('')}
+          </select>
+          <span class="status-saved">সেভ হয়েছে ✓</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function updateStatus(id, status, selectEl){
+  try{
+    const res = await fetch(`/api/orders?key=${encodeURIComponent(ADMIN_KEY)}`, {
+      method: 'PATCH',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({id, status})
+    });
+    const data = await res.json();
+    if(res.ok && data.success){
+      const badge = selectEl.parentElement.querySelector('.status-saved');
+      badge.classList.add('show');
+      setTimeout(()=> badge.classList.remove('show'), 1500);
+    }
+  }catch(e){
+    console.error('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে:', e);
+  }
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str ?? '';
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>

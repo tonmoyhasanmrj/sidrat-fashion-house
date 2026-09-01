@@ -345,6 +345,17 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
 .co-btn.form{background:var(--gold); color:var(--maroon-dark);}
 .co-note{font-size:0.78rem; color:var(--rose); margin-top:16px; text-align:center;}
 
+/* Customer info form */
+.co-form{margin-bottom:20px;}
+.co-label{font-size:0.82rem; font-weight:700; color:var(--charcoal); display:block; margin:10px 0 5px;}
+.co-label .req{color:var(--rose);}
+.co-input{
+  width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--blush);
+  background:var(--cream); font-family:'Hind Siliguri', sans-serif; font-size:0.92rem; color:var(--charcoal);
+  resize:vertical;
+}
+.co-input:focus{outline:none; border-color:var(--gold);}
+
 /* Payment (bKash/Nagad) block */
 .pay-block{margin-bottom:22px;}
 .pay-title{font-size:0.85rem; font-weight:700; color:var(--charcoal); margin-bottom:10px; display:flex; align-items:center; gap:6px;}
@@ -496,6 +507,24 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
     <div class="co-body">
       <h2>অর্ডার সম্পন্ন করুন</h2>
       <p class="co-sub">নিচের যেকোনো একটি মাধ্যমে অর্ডারটি পাঠিয়ে দিন — আমরা দ্রুত যোগাযোগ করবো।</p>
+
+      <div class="co-form">
+        <label class="co-label">নাম <span class="req">*</span></label>
+        <input type="text" id="custName" class="co-input" placeholder="আপনার পুরো নাম">
+        <label class="co-label">ফোন নম্বর <span class="req">*</span></label>
+        <input type="tel" id="custPhone" class="co-input" placeholder="যেমন: 017XXXXXXXX">
+        <label class="co-label">ঠিকানা <span class="req">*</span></label>
+        <textarea id="custAddress" class="co-input" rows="2" placeholder="বাসা/রোড/এলাকা, থানা, জেলা"></textarea>
+        <label class="co-label">পেমেন্ট মাধ্যম</label>
+        <select id="custPayment" class="co-input">
+          <option value="ক্যাশ অন ডেলিভারি">ক্যাশ অন ডেলিভারি</option>
+          <option value="bKash">bKash</option>
+          <option value="Nagad">Nagad</option>
+        </select>
+        <label class="co-label">ট্রানজেকশন আইডি (bKash/Nagad হলে)</label>
+        <input type="text" id="custTrxId" class="co-input" placeholder="যেমন: 8N7A5X2K1P">
+      </div>
+
       <div class="co-summary" id="coSummary"></div>
       <div class="co-copy" id="coCopy"><span>অর্ডার সারাংশ কপি করুন</span><span class="copy-icon">📋</span></div>
 
@@ -525,9 +554,8 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
       <div class="co-options">
         <a class="co-btn whatsapp" id="waBtn" target="_blank" rel="noopener"><span class="emoji">💬</span> WhatsApp-এ অর্ডার পাঠান</a>
         <a class="co-btn telegram" id="tgBtn" target="_blank" rel="noopener"><span class="emoji">✈️</span> Telegram-এ অর্ডার পাঠান</a>
-        <a class="co-btn form" id="formBtn" target="_blank" rel="noopener"><span class="emoji">📝</span> Google Form পূরণ করুন</a>
       </div>
-      <p class="co-note">Telegram ও Google Form-এর ক্ষেত্রে অনুগ্রহ করে কপি করা সারাংশটি চ্যাট/ফর্মে পেস্ট করে দিন।</p>
+      <p class="co-note">Telegram-এর ক্ষেত্রে অনুগ্রহ করে কপি করা সারাংশটি চ্যাটে পেস্ট করে দিন।</p>
     </div>
   </div>
 </div>
@@ -551,7 +579,6 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
 const CONFIG = {
   whatsappNumber: '8801771783408',
   telegramUsername: 'jabedhossainmrj',
-  googleFormUrl: 'https://forms.gle/YcJytc2r4r7aErHu9',
   bkashNumber: '01771783408',
   nagadNumber: '01771783408'
 };
@@ -564,7 +591,6 @@ async function loadSettings(){
 
     if(s.whatsappNumber) CONFIG.whatsappNumber = s.whatsappNumber;
     if(s.telegramUsername) CONFIG.telegramUsername = s.telegramUsername;
-    if(s.googleFormUrl) CONFIG.googleFormUrl = s.googleFormUrl;
     if(s.bkashNumber) CONFIG.bkashNumber = s.bkashNumber;
     if(s.nagadNumber) CONFIG.nagadNumber = s.nagadNumber;
 
@@ -900,10 +926,57 @@ function fallbackCopy(text, label){
 }
 
 /* ---------- Checkout ---------- */
-function buildOrderSummary(){
+function buildOrderSummary(orderId){
+  const name = $('#custName').value.trim();
+  const phone = $('#custPhone').value.trim();
+  const address = $('#custAddress').value.trim();
+  const paymentMethod = $('#custPayment').value;
+  const trxId = $('#custTrxId').value.trim();
+
   const lines = cart.map(i => `• ${i.name} (সাইজ: ${i.size}) × ${i.qty} = ${fmt(i.price*i.qty)}`);
   const total = `সর্বমোট: ${fmt(cartTotal())}`;
-  return lines.join('\n') + '\n' + total + '\n\nনাম:\nঠিকানা:\nফোন নম্বর:\nপেমেন্ট মাধ্যম (bKash/Nagad/COD):\nট্রানজেকশন আইডি (যদি থাকে):';
+
+  let text = (orderId ? `অর্ডার নম্বর: ${orderId}\n\n` : '') + lines.join('\n') + '\n' + total;
+  text += `\n\nনাম: ${name}\nঠিকানা: ${address}\nফোন নম্বর: ${phone}\nপেমেন্ট মাধ্যম: ${paymentMethod}`;
+  if(trxId) text += `\nট্রানজেকশন আইডি: ${trxId}`;
+  return text;
+}
+
+async function saveOrder(via){
+  const name = $('#custName').value.trim();
+  const phone = $('#custPhone').value.trim();
+  const address = $('#custAddress').value.trim();
+
+  if(!name || !phone || !address){
+    showToast('নাম, ফোন নম্বর ও ঠিকানা লিখুন');
+    return null;
+  }
+
+  const payload = {
+    name, phone, address,
+    items: cart.map(i => ({name:i.name, size:i.size, qty:i.qty, price:i.price})),
+    total: cartTotal(),
+    via,
+    paymentMethod: $('#custPayment').value,
+    trxId: $('#custTrxId').value.trim()
+  };
+
+  try{
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(!res.ok || !data.success){
+      console.error('অর্ডার সেভ ব্যর্থ:', data);
+      return null;
+    }
+    return data.orderId;
+  }catch(e){
+    console.error('অর্ডার সেভ করতে সমস্যা হয়েছে:', e);
+    return null;
+  }
 }
 
 function openCheckout(){
@@ -911,17 +984,11 @@ function openCheckout(){
     showToast('আপনার কার্ট খালি, আগে পণ্য যোগ করুন।');
     return;
   }
-  const summaryText = buildOrderSummary();
   $('#coSummary').innerHTML = cart.map(i =>
     `<div class="line"><span>${i.name} (${i.size}) ×${i.qty}</span><span>${fmt(i.price*i.qty)}</span></div>`
   ).join('') + `<div class="line total"><span>সর্বমোট</span><span>${fmt(cartTotal())}</span></div>`;
 
-  const waText = encodeURIComponent(`নমস্কার সিদরাত ফ্যাশন হাউস, আমি নিচের পণ্যগুলো অর্ডার করতে চাই:\n\n${summaryText}`);
-  $('#waBtn').href = `https://wa.me/${CONFIG.whatsappNumber}?text=${waText}`;
-  $('#tgBtn').href = `https://t.me/${CONFIG.telegramUsername}`;
-  $('#formBtn').href = CONFIG.googleFormUrl;
-
-  $('#coCopy').onclick = () => copyOrderSummary(summaryText, 'অর্ডার সারাংশ');
+  $('#coCopy').onclick = () => copyOrderSummary(buildOrderSummary(), 'অর্ডার সারাংশ');
 
   $('#bkashNum').textContent = CONFIG.bkashNumber;
   $('#nagadNum').textContent = CONFIG.nagadNumber;
@@ -942,6 +1009,21 @@ $('#cartBtn').addEventListener('click', openDrawer);
 $('#closeCart').addEventListener('click', closeDrawer);
 $('#overlay').addEventListener('click', closeDrawer);
 $('#checkoutBtn').addEventListener('click', openCheckout);
+$('#waBtn').addEventListener('click', async (e)=>{
+  e.preventDefault();
+  const orderId = await saveOrder('whatsapp');
+  if(orderId === null && (!$('#custName').value.trim() || !$('#custPhone').value.trim() || !$('#custAddress').value.trim())) return;
+  const summaryText = buildOrderSummary(orderId);
+  const waText = encodeURIComponent(`নমস্কার সিদরাত ফ্যাশন হাউস, আমি নিচের পণ্যগুলো অর্ডার করতে চাই:\n\n${summaryText}`);
+  window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${waText}`, '_blank');
+});
+$('#tgBtn').addEventListener('click', async (e)=>{
+  e.preventDefault();
+  const orderId = await saveOrder('telegram');
+  if(orderId === null && (!$('#custName').value.trim() || !$('#custPhone').value.trim() || !$('#custAddress').value.trim())) return;
+  copyOrderSummary(buildOrderSummary(orderId), 'অর্ডার সারাংশ');
+  window.open(`https://t.me/${CONFIG.telegramUsername}`, '_blank');
+});
 $$('[data-close]').forEach(el => el.addEventListener('click', closeAllModals));
 $('#searchInput').addEventListener('input', (e)=>{
   searchTerm = e.target.value;
