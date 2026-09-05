@@ -40,6 +40,7 @@ collections:
               - {label: "ছবি", name: "img", widget: "image", required: false, hint: "ছবি না দিলে সুন্দর ডিজাইনার প্লেসহোল্ডার দেখাবে"}
               - {label: "বিবরণ", name: "desc", widget: "text"}
               - {label: "\"নতুন\" ব্যাজ দেখাবে?", name: "isNew", widget: "boolean", default: false}
+              - {label: "ফ্ল্যাশ সেলে দেখাবে?", name: "flashSale", widget: "boolean", default: false, hint: "চালু করলে এই প্রোডাক্টটা হোমপেজের ফ্ল্যাশ সেল সেকশনে দেখাবে (নিচে সেটিংসে ফ্ল্যাশ সেল শেষ হওয়ার সময় বসাতে হবে)"}
 
   - name: "settings"
     label: "সেটিংস"
@@ -49,6 +50,13 @@ collections:
         name: "settings"
         fields:
           - {label: "হোমপেজের হিরো ছবি", name: "heroImage", widget: "image", required: false, hint: "ছবি না দিলে ডিফল্ট ডিজাইন (খিলান-আকৃতির নকশা) দেখাবে"}
+          - {label: "হিরো সেকশনের উপরের ছোট লেখা", name: "heroEyebrow", widget: "string", required: false, hint: "যেমন: নারায়ণগঞ্জ থেকে সারা বাংলাদেশে"}
+          - {label: "হিরো সেকশনের মূল শিরোনাম", name: "heroTitle", widget: "string", required: false}
+          - {label: "হিরো সেকশনের সাবটাইটেল", name: "heroSubtitle", widget: "text", required: false}
+          - {label: "হিরো সেকশনের বাটনের লেখা", name: "heroCtaText", widget: "string", required: false, hint: "যেমন: কালেকশন দেখুন"}
+          - {label: "ফুটারের ট্যাগলাইন", name: "footerTagline", widget: "text", required: false}
+          - {label: "ফ্ল্যাশ সেল সেকশনের শিরোনাম", name: "flashSaleTitle", widget: "string", required: false, hint: "যেমন: ⚡ ফ্ল্যাশ সেল"}
+          - {label: "ফ্ল্যাশ সেল কখন শেষ হবে", name: "flashSaleEndsAt", widget: "datetime", required: false, hint: "এই সময় পার হয়ে গেলে ফ্ল্যাশ সেল সেকশন সাইট থেকে নিজে থেকেই লুকিয়ে যাবে। খালি রাখলে ফ্ল্যাশ সেল সেকশন দেখাবে না।"}
           - {label: "WhatsApp নম্বর", name: "whatsappNumber", widget: "string", hint: "দেশের কোডসহ, + বা স্পেস ছাড়া — যেমন 8801XXXXXXXXX"}
           - {label: "Telegram ইউজারনেম", name: "telegramUsername", widget: "string", hint: "@ চিহ্ন ছাড়া লিখুন"}
           - {label: "bKash নম্বর", name: "bkashNumber", widget: "string"}

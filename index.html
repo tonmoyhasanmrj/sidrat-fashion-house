@@ -207,6 +207,14 @@ header{
   color:var(--gold-light); font-size:0.68rem; font-weight:700;
   padding:4px 10px; border-radius:12px; letter-spacing:0.5px;
 }
+.wish-btn{
+  position:absolute; top:8px; right:8px; z-index:2; width:32px; height:32px;
+  border-radius:50%; background:rgba(255,255,255,0.85); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:1.05rem;
+  transition:transform 0.15s, background 0.2s;
+}
+.wish-btn:hover{transform:scale(1.1);}
+.wish-btn.active{background:var(--white);}
 .product-info{padding:16px 18px 20px; flex:1; display:flex; flex-direction:column;}
 .product-cat{font-size:0.72rem; color:var(--rose); font-weight:600; letter-spacing:0.5px; margin-bottom:4px;}
 .product-name{font-weight:600; font-size:1.02rem; margin-bottom:6px; color:var(--charcoal);}
@@ -218,6 +226,28 @@ header{
   border:1.5px solid var(--maroon); transition:all 0.2s;
 }
 .add-btn:hover{background:var(--maroon); color:var(--gold-light);}
+
+/* ---------- Flash Sale ---------- */
+.flash-sale{
+  background:linear-gradient(135deg, var(--maroon-dark), var(--maroon));
+  padding:34px 24px 44px; margin-top:4px;
+}
+.flash-sale-head{
+  max-width:1180px; margin:0 auto 18px; display:flex; align-items:center;
+  justify-content:space-between; flex-wrap:wrap; gap:12px;
+}
+.flash-sale-title{
+  font-family:'Tiro Bangla'; font-size:1.7rem; color:var(--gold-light); font-weight:400;
+}
+.flash-sale-timer{
+  display:flex; gap:8px; align-items:center; color:var(--blush); font-size:0.85rem; font-weight:600;
+}
+.flash-sale-timer .seg{
+  background:rgba(255,255,255,0.12); border-radius:8px; padding:6px 10px;
+  font-family:'Tiro Bangla'; font-size:1rem; color:var(--gold-light); min-width:36px; text-align:center;
+}
+.flash-sale-grid .product-card{position:relative;}
+.flash-sale-grid .badge-new{background:var(--gold); color:var(--maroon-dark);}
 
 /* ---------- Footer ---------- */
 footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px; margin-top:40px;}
@@ -446,6 +476,9 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
       <a class="icon-group" href="/account/" aria-label="আমার একাউন্ট" title="আমার একাউন্ট / লগইন">
         <span class="icon-btn">👤</span><span class="icon-label">একাউন্ট</span>
       </a>
+      <button class="icon-group" id="wishlistBtn" aria-label="উইশলিস্ট দেখুন" style="background:none; border:none; cursor:pointer;">
+        <span class="icon-btn">🤍<span class="cart-count" id="wishlistCount">0</span></span><span class="icon-label">উইশলিস্ট</span>
+      </button>
       <button class="icon-group" id="cartBtn" aria-label="কার্ট দেখুন" style="background:none; border:none; cursor:pointer;">
         <span class="icon-btn">🛍️<span class="cart-count" id="cartCount">0</span></span><span class="icon-label">কার্ট</span>
       </button>
@@ -457,10 +490,10 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-text">
-      <span class="hero-eyebrow">নারায়ণগঞ্জ থেকে সারা বাংলাদেশে</span>
-      <h1>ঐতিহ্য আর আভিজাত্যের<br>মেলবন্ধনে সিদরাত</h1>
-      <p>হাতে বাছাই করা প্রতিটি পোশাকে বাংলার নকশা আর মার্জিত রুচির ছোঁয়া।</p>
-      <a href="#shop" class="hero-cta">কালেকশন দেখুন</a>
+      <span class="hero-eyebrow" id="heroEyebrow">নারায়ণগঞ্জ থেকে সারা বাংলাদেশে</span>
+      <h1 id="heroTitle">ঐতিহ্য আর আভিজাত্যের<br>মেলবন্ধনে সিদরাত</h1>
+      <p id="heroSubtitle">হাতে বাছাই করা প্রতিটি পোশাকে বাংলার নকশা আর মার্জিত রুচির ছোঁয়া।</p>
+      <a href="#shop" class="hero-cta" id="heroCta">কালেকশন দেখুন</a>
     </div>
     <div class="hero-visual" id="heroVisual">
       <div class="hero-arch"></div>
@@ -469,6 +502,15 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
   </div>
 </section>
 <div class="arch-divider"></div>
+
+<!-- ===================== FLASH SALE ===================== -->
+<section class="flash-sale" id="flashSaleSection" style="display:none;">
+  <div class="flash-sale-head">
+    <div class="flash-sale-title" id="flashSaleTitle">⚡ ফ্ল্যাশ সেল</div>
+    <div class="flash-sale-timer" id="flashSaleTimer"></div>
+  </div>
+  <div class="product-grid flash-sale-grid" id="flashSaleGrid"></div>
+</section>
 
 <!-- ===================== CATEGORY NAV ===================== -->
 <nav class="cat-nav">
@@ -487,7 +529,7 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
   <div class="footer-inner">
     <div class="footer-col">
       <h3>সিদরাত ফ্যাশন হাউস</h3>
-      <p>নারায়ণগঞ্জ, বাংলাদেশ থেকে পরিচালিত নারী পোশাকের একটি বিশ্বস্ত প্রতিষ্ঠান।</p>
+      <p id="footerTagline">নারায়ণগঞ্জ, বাংলাদেশ থেকে পরিচালিত নারী পোশাকের একটি বিশ্বস্ত প্রতিষ্ঠান।</p>
       <div class="social-row">
         <a href="#" id="footerWhatsapp" class="wa-icon" target="_blank" rel="noopener" aria-label="WhatsApp">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
@@ -525,6 +567,15 @@ footer{background:var(--maroon-dark); color:var(--blush); padding:50px 24px 26px
     <div class="total-row"><span>সর্বমোট</span><span id="cartTotal">৳০</span></div>
     <button class="checkout-btn" id="checkoutBtn">অর্ডার করুন</button>
   </div>
+</aside>
+
+<!-- ===================== WISHLIST DRAWER ===================== -->
+<aside class="drawer" id="wishlistDrawer" aria-label="উইশলিস্ট">
+  <div class="drawer-header">
+    <h2>আপনার উইশলিস্ট</h2>
+    <button class="close-btn" id="closeWishlist" aria-label="বন্ধ করুন">×</button>
+  </div>
+  <div class="cart-items" id="wishlistItems"></div>
 </aside>
 
 <!-- ===================== PRODUCT DETAIL MODAL ===================== -->
@@ -634,7 +685,9 @@ const CONFIG = {
   whatsappNumber: '8801771783408',
   telegramUsername: 'jabedhossainmrj',
   bkashNumber: '01771783408',
-  nagadNumber: '01771783408'
+  nagadNumber: '01771783408',
+  flashSaleEndsAt: '',
+  flashSaleTitle: '⚡ ফ্ল্যাশ সেল'
 };
 
 async function loadSettings(){
@@ -647,10 +700,19 @@ async function loadSettings(){
     if(s.telegramUsername) CONFIG.telegramUsername = s.telegramUsername;
     if(s.bkashNumber) CONFIG.bkashNumber = s.bkashNumber;
     if(s.nagadNumber) CONFIG.nagadNumber = s.nagadNumber;
+    if(s.flashSaleEndsAt) CONFIG.flashSaleEndsAt = s.flashSaleEndsAt;
+    if(s.flashSaleTitle) CONFIG.flashSaleTitle = s.flashSaleTitle;
 
     if(s.contactAddress) $('#footerAddress').textContent = `📍 ${s.contactAddress}`;
     if(s.contactPhone) $('#footerPhone').textContent = `📞 ${s.contactPhone}`;
     if(s.contactEmail) $('#footerEmail').textContent = `✉️ ${s.contactEmail}`;
+
+    if(s.heroEyebrow) $('#heroEyebrow').textContent = s.heroEyebrow;
+    if(s.heroTitle) $('#heroTitle').textContent = s.heroTitle;
+    if(s.heroSubtitle) $('#heroSubtitle').textContent = s.heroSubtitle;
+    if(s.heroCtaText) $('#heroCta').textContent = s.heroCtaText;
+    if(s.footerTagline) $('#footerTagline').textContent = s.footerTagline;
+    if(s.flashSaleTitle) $('#flashSaleTitle').textContent = s.flashSaleTitle;
 
     renderHeroVisual(s.heroImage);
   }catch(e){
@@ -659,6 +721,7 @@ async function loadSettings(){
   }
   $('#footerWhatsapp').href = `https://wa.me/${CONFIG.whatsappNumber}`;
   $('#footerTelegram').href = `https://t.me/${CONFIG.telegramUsername}`;
+  renderFlashSale();
 }
 
 function renderHeroVisual(heroImage){
@@ -714,6 +777,7 @@ async function loadProducts(){
   }
   renderCatNav();
   renderProducts();
+  renderFlashSale();
 }
 
 /* ============================================================
@@ -797,6 +861,39 @@ function renderCatNav(){
 }
 
 /* ---------- Render products ---------- */
+function productCardHTML(p){
+  const isWished = wishlist.includes(p.id);
+  return `
+    <div class="product-card" data-id="${p.id}">
+      <div class="product-media" style="${mediaStyle(p)}">
+        ${p.isNew ? '<span class="badge-new">নতুন</span>' : ''}
+        <button class="wish-btn ${isWished?'active':''}" data-wish="${p.id}" aria-label="উইশলিস্টে যোগ করুন">${isWished?'❤️':'🤍'}</button>
+        ${mediaHTML(p)}
+      </div>
+      <div class="product-info">
+        <div class="product-cat">${p.cat}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">${fmt(p.price)}${p.oldPrice ? `<span class="old">${fmt(p.oldPrice)}</span>` : ''}</div>
+        <button class="add-btn" data-quickadd="${p.id}">বিস্তারিত দেখুন</button>
+      </div>
+    </div>
+  `;
+}
+
+function bindProductCardEvents(grid){
+  grid.querySelectorAll('.wish-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      toggleWishlist(Number(btn.dataset.wish));
+    });
+  });
+  grid.querySelectorAll('.product-card').forEach(card=>{
+    card.addEventListener('click', (e)=>{
+      openProductModal(Number(card.dataset.id));
+    });
+  });
+}
+
 function renderProducts(){
   const grid = $('#productGrid');
   let list = PRODUCTS.filter(p => activeCat==='সব' || p.cat===activeCat);
@@ -808,26 +905,121 @@ function renderProducts(){
     grid.innerHTML = `<div class="no-results">😔 কোনো প্রোডাক্ট পাওয়া যায়নি। অন্য কিছু খুঁজে দেখুন।</div>`;
     return;
   }
-  grid.innerHTML = list.map(p => `
-    <div class="product-card" data-id="${p.id}">
-      <div class="product-media" style="${mediaStyle(p)}">
-        ${p.isNew ? '<span class="badge-new">নতুন</span>' : ''}
-        ${mediaHTML(p)}
+  grid.innerHTML = list.map(productCardHTML).join('');
+  bindProductCardEvents(grid);
+}
+
+/* ---------- ফ্ল্যাশ সেল ---------- */
+let flashSaleTimerHandle = null;
+
+function renderFlashSale(){
+  const section = $('#flashSaleSection');
+  const list = PRODUCTS.filter(p => p.flashSale);
+  const endsAt = CONFIG.flashSaleEndsAt ? new Date(CONFIG.flashSaleEndsAt) : null;
+  const now = new Date();
+
+  if(list.length===0 || !endsAt || isNaN(endsAt) || endsAt <= now){
+    section.style.display = 'none';
+    if(flashSaleTimerHandle){ clearInterval(flashSaleTimerHandle); flashSaleTimerHandle = null; }
+    return;
+  }
+
+  section.style.display = 'block';
+  const grid = $('#flashSaleGrid');
+  grid.innerHTML = list.map(productCardHTML).join('');
+  bindProductCardEvents(grid);
+
+  if(flashSaleTimerHandle) clearInterval(flashSaleTimerHandle);
+  updateFlashSaleTimer(endsAt);
+  flashSaleTimerHandle = setInterval(()=>updateFlashSaleTimer(endsAt), 1000);
+}
+
+function updateFlashSaleTimer(endsAt){
+  const diff = endsAt - new Date();
+  if(diff <= 0){
+    clearInterval(flashSaleTimerHandle);
+    flashSaleTimerHandle = null;
+    renderFlashSale();
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  const pad = n => String(n).padStart(2,'0');
+  const dayPart = d>0 ? `<span class="seg">${d}দ</span>` : '';
+  $('#flashSaleTimer').innerHTML =
+    `শেষ হবে: ${dayPart}<span class="seg">${pad(h)}</span>:<span class="seg">${pad(m)}</span>:<span class="seg">${pad(s)}</span>`;
+}
+
+/* ---------- উইশলিস্ট ---------- */
+let wishlist = JSON.parse(localStorage.getItem('sidrat_wishlist') || '[]');
+
+function saveWishlist(){
+  localStorage.setItem('sidrat_wishlist', JSON.stringify(wishlist));
+  renderWishlistCount();
+}
+
+function renderWishlistCount(){
+  $('#wishlistCount').textContent = wishlist.length;
+}
+
+function toggleWishlist(id){
+  const product = PRODUCTS.find(p=>p.id===id);
+  if(wishlist.includes(id)){
+    wishlist = wishlist.filter(x=>x!==id);
+    if(product) showToast(`"${product.name}" উইশলিস্ট থেকে সরানো হয়েছে`);
+  } else {
+    wishlist.push(id);
+    if(product) showToast(`"${product.name}" উইশলিস্টে যোগ হয়েছে ❤️`);
+  }
+  saveWishlist();
+  renderProducts();
+  renderFlashSale();
+  if($('#wishlistDrawer').classList.contains('open')) renderWishlistDrawer();
+}
+
+function renderWishlistDrawer(){
+  const wrap = $('#wishlistItems');
+  const items = PRODUCTS.filter(p => wishlist.includes(p.id));
+  if(items.length===0){
+    wrap.innerHTML = `<div class="cart-empty">🤍<br>আপনার উইশলিস্ট এখনো খালি।<br>পছন্দের পণ্যে হার্ট আইকনে চাপুন।</div>`;
+    return;
+  }
+  wrap.innerHTML = items.map(p => `
+    <div class="cart-item">
+      <div class="thumb" style="--gp1:${p.gp[0]};--gp2:${p.gp[1]}">
+        ${p.img ? `<img src="${p.img}" alt="${p.name}">` : `<span>${p.name.charAt(0)}</span>`}
       </div>
-      <div class="product-info">
-        <div class="product-cat">${p.cat}</div>
-        <div class="product-name">${p.name}</div>
-        <div class="product-price">${fmt(p.price)}${p.oldPrice ? `<span class="old">${fmt(p.oldPrice)}</span>` : ''}</div>
-        <button class="add-btn" data-quickadd="${p.id}">বিস্তারিত দেখুন</button>
+      <div class="cart-item-info">
+        <div class="name">${p.name}</div>
+        <div class="meta">${fmt(p.price)}</div>
+        <div class="qty-row">
+          <button class="remove-btn" data-wishaddcart="${p.id}">কার্টে যোগ করুন</button>
+          <button class="remove-btn" data-wishremove="${p.id}">মুছুন</button>
+        </div>
       </div>
     </div>
   `).join('');
-
-  grid.querySelectorAll('.product-card').forEach(card=>{
-    card.addEventListener('click', (e)=>{
-      openProductModal(Number(card.dataset.id));
+  wrap.querySelectorAll('[data-wishaddcart]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const p = PRODUCTS.find(x=>x.id===Number(btn.dataset.wishaddcart));
+      if(p) addToCart(p, p.sizes[0]);
     });
   });
+  wrap.querySelectorAll('[data-wishremove]').forEach(btn=>{
+    btn.addEventListener('click', ()=>toggleWishlist(Number(btn.dataset.wishremove)));
+  });
+}
+
+function openWishlistDrawer(){
+  renderWishlistDrawer();
+  $('#wishlistDrawer').classList.add('open');
+  $('#overlay').classList.add('open');
+}
+function closeWishlistDrawer(){
+  $('#wishlistDrawer').classList.remove('open');
+  $('#overlay').classList.remove('open');
 }
 
 /* ---------- Product modal ---------- */
@@ -1116,7 +1308,9 @@ $('#closeSuccessBtn').addEventListener('click', closeAllModals);
 /* ---------- Event bindings ---------- */
 $('#cartBtn').addEventListener('click', openDrawer);
 $('#closeCart').addEventListener('click', closeDrawer);
-$('#overlay').addEventListener('click', closeDrawer);
+$('#wishlistBtn').addEventListener('click', openWishlistDrawer);
+$('#closeWishlist').addEventListener('click', closeWishlistDrawer);
+$('#overlay').addEventListener('click', ()=>{ closeDrawer(); closeWishlistDrawer(); });
 $('#checkoutBtn').addEventListener('click', openCheckout);
 $$('[data-close]').forEach(el => el.addEventListener('click', closeAllModals));
 $('#searchInput').addEventListener('input', (e)=>{
@@ -1124,7 +1318,7 @@ $('#searchInput').addEventListener('input', (e)=>{
   renderProducts();
 });
 document.addEventListener('keydown', (e)=>{
-  if(e.key==='Escape'){ closeDrawer(); closeAllModals(); }
+  if(e.key==='Escape'){ closeDrawer(); closeWishlistDrawer(); closeAllModals(); }
 });
 
 $('#deliveryLink').addEventListener('click', (e)=>{ e.preventDefault(); openInfoModal('delivery'); });
@@ -1139,6 +1333,7 @@ function openInfoModal(key){
 loadProducts();
 loadSettings();
 renderCartCount();
+renderWishlistCount();
 </script>
 </body>
 </html>
